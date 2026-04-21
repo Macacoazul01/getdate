@@ -37,7 +37,7 @@ class DateFieldDecorationConfig {
   final VoidCallback? onClear;
   final double? width;
   final double? height;
-  
+
   /// The color palette used for this decoration.
   final DateFieldColors colors;
 
@@ -77,7 +77,6 @@ class DateFieldDecorationConfig {
   }
 }
 
-
 /// Generates a default [InputDecoration] for a date field based on the provided configuration.
 InputDecoration dateFieldDefaultDecoration(
   BuildContext context, {
@@ -101,7 +100,7 @@ InputDecoration dateFieldDefaultDecoration(
     filled: true,
     isDense: !config.forceHeight,
     contentPadding: config.padding ?? const EdgeInsets.fromLTRB(10, 8, 10, 8),
-    
+
     // Hides the error text visually while keeping its state active if forced.
     errorStyle: (config.forceHeight || config.blockError)
         ? const TextStyle(fontSize: 0.001)

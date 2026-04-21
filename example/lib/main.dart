@@ -71,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const SizedBox(height: 70),
+              const SizedBox(height: 500),
               DateField(
                 controller: controller1,
                 decorationConfig: const DateFieldDecorationConfig(
@@ -98,6 +98,7 @@ class _MyHomePageState extends State<MyHomePage> {
               DateField(
                 controller: controller2,
               ),
+              const SizedBox(height: 500),
             ],
           ),
         ),

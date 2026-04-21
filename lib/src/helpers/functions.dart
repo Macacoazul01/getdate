@@ -3,8 +3,8 @@ enum DateError { invalidFormat, outOfRange }
 
 /// Parses a Brazilian Portuguese date string ('DD/MM/YYYY') into a [DateTime].
 ///
-/// Returns `null` if the string length is not exactly 10, if the slashes are 
-/// missing/misplaced, or if the resulting date is mathematically invalid 
+/// Returns `null` if the string length is not exactly 10, if the slashes are
+/// missing/misplaced, or if the resulting date is mathematically invalid
 /// (e.g., February 30th).
 DateTime? parsePtBr(String text) {
   final s = text.trim();
@@ -34,7 +34,7 @@ DateTime? parsePtBr(String text) {
 
 /// Formats a [DateTime] object into a Brazilian Portuguese string ('DD/MM/YYYY').
 ///
-/// Returns an empty string if [dt] is null. 
+/// Returns an empty string if [dt] is null.
 /// Pads days, months, and years with leading zeros if necessary.
 String formatPtBr(DateTime? dt) {
   if (dt == null) {
@@ -66,8 +66,8 @@ bool isInRange(DateTime value, DateTime first, DateTime last) {
 
 /// Validates a parsed [DateTime] against formatting rules and a permitted range.
 ///
-/// Returns a Record containing the [DateError] and its corresponding localized 
-/// string message via the [messageOf] callback. 
+/// Returns a Record containing the [DateError] and its corresponding localized
+/// string message via the [messageOf] callback.
 /// Returns `null` if the date is perfectly valid.
 ({DateError error, String message})? validateTextPtBr(
   DateTime? dt, {
@@ -93,7 +93,7 @@ bool isInRange(DateTime value, DateTime first, DateTime last) {
 /// Compares two [DateTime] objects considering only their Year, Month, and Day.
 ///
 /// Ignores hours, minutes, seconds, and milliseconds.
-/// Returns a negative integer if [a] is earlier, positive if [a] is later, 
+/// Returns a negative integer if [a] is earlier, positive if [a] is later,
 /// and `0` if they represent the exact same calendar day.
 int compareYMD(DateTime a, DateTime b) {
   if (a.year != b.year) {

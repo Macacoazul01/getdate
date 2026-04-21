@@ -29,7 +29,7 @@ class DateOverlayConfig {
   /// The border radius applied to the corners of the overlay.
   final double borderRadius;
 
-  /// Creates a copy of this configuration, overriding the specified fields 
+  /// Creates a copy of this configuration, overriding the specified fields
   /// with new values.
   DateOverlayConfig copyWith({
     double? minWidth,

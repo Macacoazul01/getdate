@@ -12,9 +12,9 @@ class DateFieldController {
     this.onChanged,
     this.onErrorChanged,
     String Function(DateError)? messageOf,
-  }) : _first = firstDate,
-       _last = lastDate,
-       _messageOf = messageOf ?? defaultMessageOf {
+  })  : _first = firstDate,
+        _last = lastDate,
+        _messageOf = messageOf ?? defaultMessageOf {
     valueListenable.value = initialValue;
   }
 
@@ -116,7 +116,7 @@ class DateFieldController {
 
   void handleSubmit() {
     final dt = validateNow();
-    
+
     if (dt == null) {
       return;
     }
@@ -196,8 +196,7 @@ class DateFieldController {
 
   void _setValueAndNotify(DateTime? dt, {required bool syncText}) {
     final current = valueListenable.value;
-    final changed =
-        !(current == null && dt == null) &&
+    final changed = !(current == null && dt == null) &&
         !(current != null && dt != null && compareYMD(current, dt) == 0);
     if (changed) {
       valueListenable.value = dt;
@@ -244,21 +243,17 @@ class DateFieldController {
       ancestor: overlayBox,
     );
 
-    const double gap = 4;
     const double pickerW = 360, pickerH = 360;
 
     final double prefDx = targetTopLeft.dx;
-    final double prefDyBelow = targetTopLeft.dy + targetSize.height + gap;
+    final double prefDyBelow = targetTopLeft.dy + targetSize.height + 4;
 
     final bool canOpenBelow = (screen.height - prefDyBelow) >= pickerH;
-    final double originDy = canOpenBelow
-        ? prefDyBelow
-        : (targetTopLeft.dy - pickerH - gap);
+    final double originDy =
+        canOpenBelow ? prefDyBelow : (targetTopLeft.dy - pickerH + 40);
 
     final double dx = prefDx.clamp(0.0, screen.width - pickerW);
     final double dy = originDy.clamp(0.0, screen.height - pickerH);
-
-    final Offset finalOffset = Offset(dx, dy);
 
     _entry = OverlayEntry(
       builder: (_) => DateOverlay(
@@ -267,7 +262,7 @@ class DateFieldController {
         initial: _initialForPicker(),
         onPick: pick,
         onOutsideTap: _closeOverlayInternal,
-        offset: finalOffset,
+        offset: Offset(dx, dy),
       ),
     );
     overlay.insert(_entry!);
@@ -294,7 +289,8 @@ class DateFieldController {
     if (tc == null) {
       return;
     }
-    tc..text = t
-    ..selection = TextSelection.collapsed(offset: t.length);
+    tc
+      ..text = t
+      ..selection = TextSelection.collapsed(offset: t.length);
   }
 }

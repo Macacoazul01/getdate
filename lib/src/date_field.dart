@@ -3,15 +3,14 @@ import 'package:flutter/services.dart';
 import 'package:getdate_textfield/getdate_textfield.dart';
 
 /// A builder function to customize the [InputDecoration] of the [DateField].
-/// 
+///
 /// Allows complete control over the visual appearance of the text field based
 /// on its current state and validation errors.
-typedef DateFieldDecorationBuilder =
-    InputDecoration Function(
-      BuildContext context,
-      String? errorText,
-      TextEditingController controller,
-    );
+typedef DateFieldDecorationBuilder = InputDecoration Function(
+  BuildContext context,
+  String? errorText,
+  TextEditingController controller,
+);
 
 /// A highly customizable date input field that coordinates with a
 /// [DateFieldController] to validate input and display a calendar overlay.
@@ -29,22 +28,22 @@ class DateField extends StatefulWidget {
 
   /// The controller that manages the state, validation, and overlay of this field.
   final DateFieldController controller;
-  
+
   /// Callback executed when the user submits a valid date (e.g., via Enter/Tab).
   final Function? onFinishFunction;
-  
+
   /// Whether the text field is interactive.
   final bool enabled;
-  
+
   /// The type of keyboard to display. Defaults to [TextInputType.datetime].
   final TextInputType keyboardType;
-  
+
   /// The action button on the keyboard (e.g., Done, Next).
   final TextInputAction textInputAction;
-  
+
   /// Optional builder to fully customize the input decoration.
   final DateFieldDecorationBuilder? decorationBuilder;
-  
+
   /// Configuration for the default built-in decoration.
   final DateFieldDecorationConfig decorationConfig;
 
@@ -69,7 +68,7 @@ class _DateFieldState extends State<DateField> {
       FilteringTextInputFormatter.allow(RegExp('[0-9/]')),
       DateMaskPtBr(),
     ];
-    
+
     widget.controller.attach(_textController, _focusNode, _link, _targetKey);
     // Simplified: always set it, even if null, to clear previous callbacks if needed
     widget.controller.setFinishFunction(widget.onFinishFunction);
@@ -78,13 +77,13 @@ class _DateFieldState extends State<DateField> {
   @override
   void didUpdateWidget(covariant DateField oldWidget) {
     super.didUpdateWidget(oldWidget);
-    
+
     // Reattach to the new controller if the widget is rebuilt with a different one
     if (oldWidget.controller != widget.controller) {
       oldWidget.controller.detach();
       widget.controller.attach(_textController, _focusNode, _link, _targetKey);
     }
-    
+
     // Always update the finish function to ensure it matches the current widget state
     widget.controller.setFinishFunction(widget.onFinishFunction);
   }
@@ -106,7 +105,6 @@ class _DateFieldState extends State<DateField> {
       child: ValueListenableBuilder<String?>(
         valueListenable: widget.controller.errorListenable,
         builder: (context, error, _) {
-          
           final decoration = (widget.decorationBuilder != null)
               ? widget.decorationBuilder!(context, error, _textController)
               : dateFieldDefaultDecoration(
@@ -119,7 +117,6 @@ class _DateFieldState extends State<DateField> {
           return Focus(
             onKeyEvent: (node, event) {
               if (event is KeyDownEvent) {
-                
                 // Submit the date when Enter or Tab is pressed
                 if (event.logicalKey == LogicalKeyboardKey.enter ||
                     event.logicalKey == LogicalKeyboardKey.tab) {
