@@ -16,7 +16,7 @@ class DateOverlay extends StatelessWidget {
     required this.onPick,
     required this.onOutsideTap,
     required this.offset,
-    this.config = const DateOverlayConfig(),
+    required this.config,
   });
 
   /// The earliest selectable date in the calendar.

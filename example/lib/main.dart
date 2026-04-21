@@ -77,6 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 decorationConfig: const DateFieldDecorationConfig(
                   hint: 'Date 1',
                   width: 120,
+                  colors: DateFieldColors(focusedBorderColor: Colors.orange),
                 ),
               ),
               const SizedBox(height: 20),

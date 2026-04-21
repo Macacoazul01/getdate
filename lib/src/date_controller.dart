@@ -11,6 +11,7 @@ class DateFieldController {
     this.validationDebounce = const Duration(milliseconds: 120),
     this.onChanged,
     this.onErrorChanged,
+    this.config = const DateOverlayConfig(),
     String Function(DateError)? messageOf,
   })  : _first = firstDate,
         _last = lastDate,
@@ -34,7 +35,7 @@ class DateFieldController {
 
   ValueChanged<DateTime?>? onChanged;
   ValueChanged<String?>? onErrorChanged;
-
+  final DateOverlayConfig config;
   final String Function(DateError) _messageOf;
 
   final ValueNotifier<DateTime?> valueListenable = ValueNotifier<DateTime?>(
@@ -243,17 +244,15 @@ class DateFieldController {
       ancestor: overlayBox,
     );
 
-    const double pickerW = 360, pickerH = 360;
-
     final double prefDx = targetTopLeft.dx;
     final double prefDyBelow = targetTopLeft.dy + targetSize.height + 4;
 
-    final bool canOpenBelow = (screen.height - prefDyBelow) >= pickerH;
+    final bool canOpenBelow = (screen.height - prefDyBelow) >= config.maxHeight;
     final double originDy =
-        canOpenBelow ? prefDyBelow : (targetTopLeft.dy - pickerH + 40);
+        canOpenBelow ? prefDyBelow : (targetTopLeft.dy - config.maxHeight+30);
 
-    final double dx = prefDx.clamp(0.0, screen.width - pickerW);
-    final double dy = originDy.clamp(0.0, screen.height - pickerH);
+    final double dx = prefDx.clamp(0.0, screen.width - config.maxWidth);
+    final double dy = originDy.clamp(0.0, screen.height - config.maxHeight);
 
     _entry = OverlayEntry(
       builder: (_) => DateOverlay(
@@ -263,6 +262,7 @@ class DateFieldController {
         onPick: pick,
         onOutsideTap: _closeOverlayInternal,
         offset: Offset(dx, dy),
+        config: config,
       ),
     );
     overlay.insert(_entry!);
