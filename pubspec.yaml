@@ -1,6 +1,6 @@
 name: getdate_textfield
-description: "A new Flutter project."
-publish_to: 'none'
+description: A text field that offers the possibility to fill a date by selecting or typing.
+homepage: https://github.com/Macacoazul01/getdate
 version: 0.1.0+1
 
 environment:
