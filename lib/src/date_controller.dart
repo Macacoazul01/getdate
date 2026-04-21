@@ -249,7 +249,7 @@ class DateFieldController {
 
     final bool canOpenBelow = (screen.height - prefDyBelow) >= config.maxHeight;
     final double originDy =
-        canOpenBelow ? prefDyBelow : (targetTopLeft.dy - config.maxHeight+30);
+        canOpenBelow ? prefDyBelow : (targetTopLeft.dy - config.maxHeight + 30);
 
     final double dx = prefDx.clamp(0.0, screen.width - config.maxWidth);
     final double dy = originDy.clamp(0.0, screen.height - config.maxHeight);
