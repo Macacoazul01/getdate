@@ -1,6 +1,8 @@
 # Get date
 DateField is a text field that offers the possibility to fill a date by selecting it on the calendar or typing directly on the field (with validation).
 
+Still not ready for production use!
+
 [![Buy Me A Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-FFDD00?style=flat)](https://buymeacoffee.com/gian.bettega)
 
 ## Import
