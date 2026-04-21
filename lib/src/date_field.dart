@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:getdate_textfield/getdate_textfield.dart';
-import 'package:getdate_textfield/src/config/decoration_config.dart';
 
 /// A builder function to customize the [InputDecoration] of the [DateField].
 /// 
