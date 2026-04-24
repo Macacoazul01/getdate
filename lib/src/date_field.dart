@@ -54,7 +54,6 @@ class DateField extends StatefulWidget {
 class _DateFieldState extends State<DateField> {
   late final TextEditingController _textController;
   late final FocusNode _focusNode;
-  late final LayerLink _link;
   late final List<TextInputFormatter> _formatters;
   final GlobalKey _targetKey = GlobalKey();
 
@@ -63,13 +62,12 @@ class _DateFieldState extends State<DateField> {
     super.initState();
     _textController = TextEditingController(text: widget.controller.text);
     _focusNode = FocusNode();
-    _link = LayerLink();
     _formatters = <TextInputFormatter>[
       FilteringTextInputFormatter.allow(RegExp('[0-9/]')),
       DateMaskPtBr(),
     ];
 
-    widget.controller.attach(_textController, _focusNode, _link, _targetKey);
+    widget.controller.attach(_textController, _focusNode,_targetKey);
     // Simplified: always set it, even if null, to clear previous callbacks if needed
     widget.controller.setFinishFunction(widget.onFinishFunction);
   }
@@ -81,7 +79,7 @@ class _DateFieldState extends State<DateField> {
     // Reattach to the new controller if the widget is rebuilt with a different one
     if (oldWidget.controller != widget.controller) {
       oldWidget.controller.detach();
-      widget.controller.attach(_textController, _focusNode, _link, _targetKey);
+      widget.controller.attach(_textController, _focusNode, _targetKey);
     }
 
     // Always update the finish function to ensure it matches the current widget state
@@ -98,85 +96,81 @@ class _DateFieldState extends State<DateField> {
 
   @override
   Widget build(BuildContext context) {
-    // CompositedTransformTarget allows the DateOverlay to anchor itself to this field
-    return CompositedTransformTarget(
-      link: _link,
-      key: _targetKey,
-      child: OverlayPortal(
-        controller: widget.controller.overlayPortalController,
-        overlayChildBuilder: (BuildContext context) {
-          return RepaintBoundary(
-            child: DateOverlay(
-              first: widget.controller.firstDate,
-              last: widget.controller.lastDate,
-              initial: widget.controller.overlayInitialDate,
-              onPick: widget.controller.pick,
-              onOutsideTap: widget.controller.closeOverlay,
-              offset: widget.controller.overlayOffset,
-              config: widget.controller.config,
+    return OverlayPortal(
+      key: _targetKey, 
+      controller: widget.controller.overlayPortalController,
+      overlayChildBuilder: (BuildContext context) {
+        return RepaintBoundary(
+          child: DateOverlay(
+            first: widget.controller.firstDate,
+            last: widget.controller.lastDate,
+            initial: widget.controller.overlayInitialDate,
+            onPick: widget.controller.pick,
+            onOutsideTap: widget.controller.closeOverlay,
+            offset: widget.controller.overlayOffset,
+            config: widget.controller.config,
+          ),
+        );
+      },
+      child: ValueListenableBuilder<String?>(
+        valueListenable: widget.controller.errorListenable,
+        builder: (context, error, _) {
+          final decoration = (widget.decorationBuilder != null)
+              ? widget.decorationBuilder!(context, error, _textController)
+              : dateFieldDefaultDecoration(
+                  context,
+                  errorText: error,
+                  controller: _textController,
+                  config: widget.decorationConfig,
+                );
+
+          return Focus(
+            onKeyEvent: (node, event) {
+              if (event is KeyDownEvent) {
+                // Submit the date when Enter or Tab is pressed
+                if (event.logicalKey == LogicalKeyboardKey.enter ||
+                    event.logicalKey == LogicalKeyboardKey.tab) {
+                  widget.controller.handleSubmit();
+                  return KeyEventResult.handled;
+                }
+                // Close the calendar overlay when Escape is pressed while typing
+                if (event.logicalKey == LogicalKeyboardKey.escape) {
+                  widget.controller.closeOverlay();
+                  node.unfocus();
+                  return KeyEventResult.handled;
+                }
+              }
+              return KeyEventResult.ignored;
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                if (widget.decorationConfig.showTitle) ...[
+                  Text(widget.decorationConfig.hint),
+                  const SizedBox(height: 15),
+                ],
+                SizedBox(
+                  height: widget.decorationConfig.height,
+                  width: widget.decorationConfig.width,
+                  child: TextField(
+                    controller: _textController,
+                    focusNode: _focusNode,
+                    enabled: widget.enabled,
+                    keyboardType: widget.keyboardType,
+                    textInputAction: widget.textInputAction,
+                    inputFormatters: _formatters,
+                    decoration: decoration,
+                    onChanged: widget.controller.onUserChangedText,
+                    onSubmitted: (_) => widget.controller.handleSubmit(),
+                    onTap: () {
+                      widget.controller.openOverlay(context);
+                    },
+                  ),
+                ),
+              ],
             ),
           );
         },
-        child: ValueListenableBuilder<String?>(
-          valueListenable: widget.controller.errorListenable,
-          builder: (context, error, _) {
-            final decoration = (widget.decorationBuilder != null)
-                ? widget.decorationBuilder!(context, error, _textController)
-                : dateFieldDefaultDecoration(
-                    context,
-                    errorText: error,
-                    controller: _textController,
-                    config: widget.decorationConfig,
-                  );
-
-            return Focus(
-              onKeyEvent: (node, event) {
-                if (event is KeyDownEvent) {
-                  // Submit the date when Enter or Tab is pressed
-                  if (event.logicalKey == LogicalKeyboardKey.enter ||
-                      event.logicalKey == LogicalKeyboardKey.tab) {
-                    widget.controller.handleSubmit();
-                    return KeyEventResult.handled;
-                  }
-                  // Close the calendar overlay when Escape is pressed while typing
-                  if (event.logicalKey == LogicalKeyboardKey.escape) {
-                    widget.controller.closeOverlay();
-                    node.unfocus();
-                    return KeyEventResult.handled;
-                  }
-                }
-                return KeyEventResult.ignored;
-              },
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  if (widget.decorationConfig.showTitle) ...[
-                    Text(widget.decorationConfig.hint),
-                    const SizedBox(height: 15),
-                  ],
-                  SizedBox(
-                    height: widget.decorationConfig.height,
-                    width: widget.decorationConfig.width,
-                    child: TextField(
-                      controller: _textController,
-                      focusNode: _focusNode,
-                      enabled: widget.enabled,
-                      keyboardType: widget.keyboardType,
-                      textInputAction: widget.textInputAction,
-                      inputFormatters: _formatters,
-                      decoration: decoration,
-                      onChanged: widget.controller.onUserChangedText,
-                      onSubmitted: (_) => widget.controller.handleSubmit(),
-                      onTap: () {
-                        widget.controller.openOverlay(context);
-                      },
-                    ),
-                  ),
-                ],
-              ),
-            );
-          },
-        ),
       ),
     );
   }

@@ -25,7 +25,7 @@ class DateFieldController {
 
   TextEditingController? _textController;
   FocusNode? _focusNode;
-  LayerLink? _link;
+
   final OverlayPortalController overlayPortalController =
       OverlayPortalController();
   Offset overlayOffset = Offset.zero;
@@ -57,12 +57,10 @@ class DateFieldController {
   void attach(
     TextEditingController textController,
     FocusNode focusNode,
-    LayerLink link,
     GlobalKey targetKey,
   ) {
     _textController = textController;
     _focusNode = focusNode;
-    _link = link;
     _targetKey = targetKey;
 
     _syncTextFromValue();
@@ -78,7 +76,6 @@ class DateFieldController {
     _focusNode?.unfocus();
     _textController = null;
     _focusNode = null;
-    _link = null;
     _targetKey = null;
   }
 
@@ -219,7 +216,7 @@ class DateFieldController {
   void _clearError() => _setErrorAndNotify(null);
 
   void _openOverlayInternal({BuildContext? context}) {
-    if (overlayPortalController.isShowing || _link == null) {
+    if (overlayPortalController.isShowing) {
       return;
     }
 
