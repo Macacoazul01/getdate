@@ -162,9 +162,6 @@ class _DateFieldState extends State<DateField> {
                     decoration: decoration,
                     onChanged: widget.controller.onUserChangedText,
                     onSubmitted: (_) => widget.controller.handleSubmit(),
-                    onTap: () {
-                      widget.controller.openOverlay(context);
-                    },
                   ),
                 ),
               ],

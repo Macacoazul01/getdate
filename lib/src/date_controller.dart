@@ -264,11 +264,6 @@ class DateFieldController {
     }
   }
 
-  DateTime initialForPicker() {
-    final base = parsePtBr(_text()) ?? valueListenable.value ?? DateTime.now();
-    return clampDate(base, _first, _last);
-  }
-
   String _text() => _textController?.text ?? '';
 
   void _writeText(String t) {
