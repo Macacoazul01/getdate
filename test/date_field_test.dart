@@ -143,7 +143,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byType(CalendarDatePicker), findsOneWidget);
-      expect(controller.isOverlayOpen, isTrue);
+      expect(controller.overlayPortalController.isShowing, isTrue);
     });
 
     testWidgets('9. Tocar no ícone ou campo quando não tem foco abre overlay',
@@ -177,7 +177,7 @@ void main() {
 
       expect(find.byType(CalendarDatePicker), findsNothing); // Fechou
       expect(controller.value!.day, 15);
-      expect(controller.isOverlayOpen, isFalse);
+      expect(controller.overlayPortalController.isShowing, isFalse);
     });
 
     testWidgets('11. Tocar fora do calendário fecha o overlay', (tester) async {
