@@ -26,7 +26,10 @@ class DateFieldController {
   TextEditingController? _textController;
   FocusNode? _focusNode;
   LayerLink? _link;
-  OverlayEntry? _entry;
+  final OverlayPortalController overlayPortalController =
+      OverlayPortalController();
+  Offset overlayOffset = Offset.zero;
+  DateTime overlayInitialDate = DateTime.now();
   GlobalKey? _targetKey;
   Function? onPickComplete;
 
@@ -42,7 +45,6 @@ class DateFieldController {
     null,
   );
   final ValueNotifier<String?> errorListenable = ValueNotifier<String?>(null);
-  final ValueNotifier<bool> overlayOpenListenable = ValueNotifier<bool>(false);
 
   bool _justSubmitted = false;
 
@@ -51,7 +53,6 @@ class DateFieldController {
   DateTime? get value => valueListenable.value;
   String get text => _text();
   String? get errorText => errorListenable.value;
-  bool get isOverlayOpen => overlayOpenListenable.value;
 
   void attach(
     TextEditingController textController,
@@ -85,7 +86,6 @@ class DateFieldController {
     detach();
     valueListenable.dispose();
     errorListenable.dispose();
-    overlayOpenListenable.dispose();
   }
 
   void setRange({required DateTime first, required DateTime last}) {
@@ -219,7 +219,7 @@ class DateFieldController {
   void _clearError() => _setErrorAndNotify(null);
 
   void _openOverlayInternal({BuildContext? context}) {
-    if (overlayOpenListenable.value || _link == null) {
+    if (overlayPortalController.isShowing || _link == null) {
       return;
     }
 
@@ -254,30 +254,20 @@ class DateFieldController {
     final double dx = prefDx.clamp(0.0, screen.width - config.maxWidth);
     final double dy = originDy.clamp(0.0, screen.height - config.maxHeight);
 
-    _entry = OverlayEntry(
-      builder: (_) => DateOverlay(
-        first: _first,
-        last: _last,
-        initial: _initialForPicker(),
-        onPick: pick,
-        onOutsideTap: _closeOverlayInternal,
-        offset: Offset(dx, dy),
-        config: config,
-      ),
-    );
-    overlay.insert(_entry!);
-    overlayOpenListenable.value = true;
+    overlayOffset = Offset(dx, dy);
+    final baseDate =
+        parsePtBr(_text()) ?? valueListenable.value ?? DateTime.now();
+    overlayInitialDate = clampDate(baseDate, _first, _last);
+    overlayPortalController.show();
   }
 
   void _closeOverlayInternal() {
-    _entry?.remove();
-    _entry = null;
-    if (overlayOpenListenable.value) {
-      overlayOpenListenable.value = false;
+    if (overlayPortalController.isShowing) {
+      overlayPortalController.hide();
     }
   }
 
-  DateTime _initialForPicker() {
+  DateTime initialForPicker() {
     final base = parsePtBr(_text()) ?? valueListenable.value ?? DateTime.now();
     return clampDate(base, _first, _last);
   }

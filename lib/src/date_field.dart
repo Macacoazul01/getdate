@@ -102,67 +102,81 @@ class _DateFieldState extends State<DateField> {
     return CompositedTransformTarget(
       link: _link,
       key: _targetKey,
-      child: ValueListenableBuilder<String?>(
-        valueListenable: widget.controller.errorListenable,
-        builder: (context, error, _) {
-          final decoration = (widget.decorationBuilder != null)
-              ? widget.decorationBuilder!(context, error, _textController)
-              : dateFieldDefaultDecoration(
-                  context,
-                  errorText: error,
-                  controller: _textController,
-                  config: widget.decorationConfig,
-                );
-
-          return Focus(
-            onKeyEvent: (node, event) {
-              if (event is KeyDownEvent) {
-                // Submit the date when Enter or Tab is pressed
-                if (event.logicalKey == LogicalKeyboardKey.enter ||
-                    event.logicalKey == LogicalKeyboardKey.tab) {
-                  widget.controller.handleSubmit();
-                  return KeyEventResult.handled;
-                }
-                // Close the calendar overlay when Escape is pressed while typing
-                if (event.logicalKey == LogicalKeyboardKey.escape) {
-                  widget.controller.closeOverlay();
-                  node.unfocus();
-                  return KeyEventResult.handled;
-                }
-              }
-              return KeyEventResult.ignored;
-            },
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (widget.decorationConfig.showTitle) ...[
-                  Text(widget.decorationConfig.hint),
-                  const SizedBox(height: 15),
-                ],
-                SizedBox(
-                  height: widget.decorationConfig.height,
-                  width: widget.decorationConfig.width,
-                  child: TextField(
-                    controller: _textController,
-                    focusNode: _focusNode,
-                    enabled: widget.enabled,
-                    keyboardType: widget.keyboardType,
-                    textInputAction: widget.textInputAction,
-                    inputFormatters: _formatters,
-                    decoration: decoration,
-                    onChanged: widget.controller.onUserChangedText,
-                    onSubmitted: (_) => widget.controller.handleSubmit(),
-                    onTap: () {
-                      if (!widget.controller.isOverlayOpen) {
-                        widget.controller.openOverlay(context);
-                      }
-                    },
-                  ),
-                ),
-              ],
+      child: OverlayPortal(
+        controller: widget.controller.overlayPortalController,
+        overlayChildBuilder: (BuildContext context) {
+          return RepaintBoundary(
+            child: DateOverlay(
+              first: widget.controller.firstDate,
+              last: widget.controller.lastDate,
+              initial: widget.controller.overlayInitialDate,
+              onPick: widget.controller.pick,
+              onOutsideTap: widget.controller.closeOverlay,
+              offset: widget.controller.overlayOffset,
+              config: widget.controller.config,
             ),
           );
         },
+        child: ValueListenableBuilder<String?>(
+          valueListenable: widget.controller.errorListenable,
+          builder: (context, error, _) {
+            final decoration = (widget.decorationBuilder != null)
+                ? widget.decorationBuilder!(context, error, _textController)
+                : dateFieldDefaultDecoration(
+                    context,
+                    errorText: error,
+                    controller: _textController,
+                    config: widget.decorationConfig,
+                  );
+
+            return Focus(
+              onKeyEvent: (node, event) {
+                if (event is KeyDownEvent) {
+                  // Submit the date when Enter or Tab is pressed
+                  if (event.logicalKey == LogicalKeyboardKey.enter ||
+                      event.logicalKey == LogicalKeyboardKey.tab) {
+                    widget.controller.handleSubmit();
+                    return KeyEventResult.handled;
+                  }
+                  // Close the calendar overlay when Escape is pressed while typing
+                  if (event.logicalKey == LogicalKeyboardKey.escape) {
+                    widget.controller.closeOverlay();
+                    node.unfocus();
+                    return KeyEventResult.handled;
+                  }
+                }
+                return KeyEventResult.ignored;
+              },
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (widget.decorationConfig.showTitle) ...[
+                    Text(widget.decorationConfig.hint),
+                    const SizedBox(height: 15),
+                  ],
+                  SizedBox(
+                    height: widget.decorationConfig.height,
+                    width: widget.decorationConfig.width,
+                    child: TextField(
+                      controller: _textController,
+                      focusNode: _focusNode,
+                      enabled: widget.enabled,
+                      keyboardType: widget.keyboardType,
+                      textInputAction: widget.textInputAction,
+                      inputFormatters: _formatters,
+                      decoration: decoration,
+                      onChanged: widget.controller.onUserChangedText,
+                      onSubmitted: (_) => widget.controller.handleSubmit(),
+                      onTap: () {
+                        widget.controller.openOverlay(context);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            );
+          },
+        ),
       ),
     );
   }
