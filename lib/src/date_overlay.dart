@@ -42,48 +42,46 @@ class DateOverlay extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Positioned.fill(
-      child: Stack(
-        children: [
-          // Invisible layer to detect taps outside the calendar overlay
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: onOutsideTap,
-          ),
-          Positioned(
-            left: offset.dx,
-            top: offset.dy,
-            child: Material(
-              elevation: config.elevation,
-              borderRadius: BorderRadius.circular(config.borderRadius),
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minWidth: config.minWidth,
-                  maxWidth: config.maxWidth,
-                  maxHeight: config.maxHeight,
-                ),
-                child: Focus(
-                  // Listen for keyboard events, specifically closing the overlay on 'Escape'
-                  onKeyEvent: (node, event) {
-                    if (event is KeyDownEvent &&
-                        event.logicalKey == LogicalKeyboardKey.escape) {
-                      onOutsideTap();
-                      return KeyEventResult.handled;
-                    }
-                    return KeyEventResult.ignored;
-                  },
-                  child: CalendarDatePicker(
-                    initialDate: initial,
-                    firstDate: first,
-                    lastDate: last,
-                    onDateChanged: onPick,
-                  ),
+    return Stack(
+      children: [
+        // Invisible layer to detect taps outside the calendar overlay
+        GestureDetector(
+          behavior: HitTestBehavior.opaque,
+          onTap: onOutsideTap,
+        ),
+        Positioned(
+          left: offset.dx,
+          top: offset.dy,
+          child: Material(
+            elevation: config.elevation,
+            borderRadius: BorderRadius.circular(config.borderRadius),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                minWidth: config.minWidth,
+                maxWidth: config.maxWidth,
+                maxHeight: config.maxHeight,
+              ),
+              child: Focus(
+                // Listen for keyboard events, specifically closing the overlay on 'Escape'
+                onKeyEvent: (node, event) {
+                  if (event is KeyDownEvent &&
+                      event.logicalKey == LogicalKeyboardKey.escape) {
+                    onOutsideTap();
+                    return KeyEventResult.handled;
+                  }
+                  return KeyEventResult.ignored;
+                },
+                child: CalendarDatePicker(
+                  initialDate: initial,
+                  firstDate: first,
+                  lastDate: last,
+                  onDateChanged: onPick,
                 ),
               ),
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
