@@ -128,7 +128,6 @@ class _DateFieldShowcaseState extends State<DateFieldShowcase> {
               controller: styledController,
               decorationConfig: const DateFieldDecorationConfig(
                 hint: 'Date of Birth',
-                showTitle: true,
                 clear: true,
                 radius: 12,
                 colors: DateFieldColors(
@@ -144,7 +143,7 @@ class _DateFieldShowcaseState extends State<DateFieldShowcase> {
               children: [
                 OutlinedButton(
                   onPressed: () =>
-                      styledController.setValue(DateTime(2000, 1, 1)),
+                      styledController.setValue(DateTime(2000)),
                   child: const Text('Force 01/01/2000'),
                 ),
                 const SizedBox(width: 8),
