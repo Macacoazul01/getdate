@@ -14,19 +14,19 @@ class DateOverlayConfig {
     this.borderRadius = 8.0,
   });
 
-  /// The minimum width of the calendar overlay.
+  /// The minimum width of the calendar overlay constraint.
   final double minWidth;
 
-  /// The maximum width of the calendar overlay.
+  /// The maximum width of the calendar overlay constraint.
   final double maxWidth;
 
-  /// The maximum height of the calendar overlay.
+  /// The maximum height of the calendar overlay constraint.
   final double maxHeight;
 
-  /// The z-coordinate elevation of the overlay, creating a shadow effect.
+  /// The elevation of the overlay, creating a drop shadow effect.
   final double elevation;
 
-  /// The border radius applied to the corners of the overlay.
+  /// The border radius applied to the corners of the overlay container.
   final double borderRadius;
 
   /// Creates a copy of this configuration, overriding the specified fields

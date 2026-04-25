@@ -307,7 +307,7 @@ void main() {
 
       // Chama setText diretamente
       controller.setText('25/12/2025');
-      
+
       // O texto deve atualizar na UI imediatamente
       final textField = tester.widget<TextField>(find.byType(TextField));
       expect(textField.controller!.text, '25/12/2025');
@@ -332,7 +332,7 @@ void main() {
       // 2. Apaga e digita data válida
       await tester.enterText(find.byType(TextField), '01/01/2025');
       await tester.pump(const Duration(milliseconds: 150));
-      
+
       expect(controller.errorText, isNull); // Erro deve ter sido limpo
       expect(controller.value, DateTime(2025));
     });
@@ -350,9 +350,9 @@ void main() {
 
       // Altera o range fazendo com que o limite máximo seja 2024 (deixando 2025 inválido)
       controller.setRange(first: firstDate, last: DateTime(2024, 12, 31));
-      
+
       // Como setRange chama validateNow() internamente, o erro deve aparecer instantaneamente
-      expect(controller.errorText, isNotNull); 
+      expect(controller.errorText, isNotNull);
     });
   });
 
@@ -361,7 +361,7 @@ void main() {
         (tester) async {
       final controller =
           DateFieldController(firstDate: firstDate, lastDate: lastDate);
-      
+
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
@@ -407,7 +407,8 @@ void main() {
       expect(find.byType(CalendarDatePicker), findsNothing);
     });
 
-    testWidgets('22. Após submit, bounce de foco imediato não reabre o calendário',
+    testWidgets(
+        '22. Após submit, bounce de foco imediato não reabre o calendário',
         (tester) async {
       final controller =
           DateFieldController(firstDate: firstDate, lastDate: lastDate);
@@ -417,14 +418,17 @@ void main() {
       await tester.tap(find.byType(TextField));
       await tester.pumpAndSettle();
       await tester.enterText(find.byType(TextField), '10/10/2020');
-      
+
       // Envia Enter. Isso aciona handleSubmit, tira o foco e ativa a trava (_justSubmitted = true)
       await tester.sendKeyEvent(LogicalKeyboardKey.enter);
-      
+
       // IMEDIATAMENTE forçamos o foco de volta programaticamente ANTES do frame virar.
       // Isso simula o comportamento anômalo do sistema que a trava _justSubmitted tenta evitar.
-      tester.widget<TextField>(find.byType(TextField)).focusNode?.requestFocus();
-      
+      tester
+          .widget<TextField>(find.byType(TextField))
+          .focusNode
+          ?.requestFocus();
+
       // Avançamos o frame (sem usar pumpAndSettle para não estourar o tempo da trava)
       await tester.pump();
 

@@ -1,3 +1,6 @@
+## [0.3.0] - 2026-04-24.
+-   Production ready.
+
 ## [0.2.0] - 2026-04-24.
 -   Multiple fixes and performance improvements.
 

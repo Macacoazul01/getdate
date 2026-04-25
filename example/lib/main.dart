@@ -1,10 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:getdate_textfield/getdate_textfield.dart';
 
-final DateTime startDate = DateTime.now();
-final DateTime maxGlobalDate = startDate.add(const Duration(days: 3650));
-final DateTime minGlobalDate = startDate.subtract(const Duration(days: 3650));
-
 void main() {
   runApp(const MyApp());
 }
@@ -15,93 +11,155 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'GetDate TextField Example',
       theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MyHomePage(),
+      home: const DateFieldShowcase(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class DateFieldShowcase extends StatefulWidget {
+  const DateFieldShowcase({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<DateFieldShowcase> createState() => _DateFieldShowcaseState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  final DateFieldController controller1 = DateFieldController(
-    firstDate: minGlobalDate,
-    lastDate: maxGlobalDate,
-    initialValue: startDate,
-  );
+class _DateFieldShowcaseState extends State<DateFieldShowcase> {
+  // Controller 1: Basic usage
+  late final DateFieldController basicController;
 
-  final DateFieldController controller2 = DateFieldController(
-    firstDate: minGlobalDate,
-    lastDate: maxGlobalDate,
-  );
+  // Controller 2: Advanced styling
+  late final DateFieldController styledController;
 
   @override
   void initState() {
     super.initState();
+    final today = DateTime.now();
+
+    basicController = DateFieldController(
+      firstDate: today.subtract(const Duration(days: 365 * 10)), // 10 years ago
+      lastDate: today.add(const Duration(days: 365 * 10)), // 10 years ahead
+      initialValue: today,
+    );
+
+    styledController = DateFieldController(
+      firstDate: DateTime(1900),
+      lastDate: today,
+    );
   }
 
-  void reset1() {
-    controller1.setValue(null);
+  @override
+  void dispose() {
+    basicController.dispose();
+    styledController.dispose();
+    super.dispose();
   }
 
-  void force1() {
-    controller1.setValue(startDate.add(const Duration(days: 2)));
-  }
-
-  void print1() {
-    debugPrint(controller1.value.toString());
-    debugPrint(controller1.text);
+  void _showCurrentValue(DateFieldController controller, String name) {
+    final value = controller.value;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+          value != null
+              ? '$name current value: ${value.toLocal().toString().split(' ')[0]}'
+              : '$name is empty or invalid.',
+        ),
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[300],
+      appBar: AppBar(
+        title: const Text('DateField Showcase'),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        elevation: 0,
+      ),
       body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const SizedBox(height: 500),
-              DateField(
-                controller: controller1,
-                decorationConfig: const DateFieldDecorationConfig(
-                  hint: 'Date 1',
-                  width: 120,
-                  colors: DateFieldColors(focusedBorderColor: Colors.orange),
+        padding: const EdgeInsets.all(24),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Basic Usage',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            const Text('A standard date field with default styling.'),
+            const SizedBox(height: 16),
+
+            DateField(
+              controller: basicController,
+            ),
+
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                OutlinedButton(
+                  onPressed: () => basicController.setValue(null),
+                  child: const Text('Reset'),
+                ),
+                const SizedBox(width: 8),
+                FilledButton(
+                  onPressed: () =>
+                      _showCurrentValue(basicController, 'Basic Field'),
+                  child: const Text('Print Value'),
+                ),
+              ],
+            ),
+
+            const Divider(height: 60),
+
+            const Text(
+              'Custom Styling',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 8),
+            const Text(
+                'A customized field with clear icon, borders, and custom colors.'),
+            const SizedBox(height: 16),
+
+            DateField(
+              controller: styledController,
+              decorationConfig: const DateFieldDecorationConfig(
+                hint: 'Date of Birth',
+                showTitle: true,
+                clear: true,
+                radius: 12,
+                colors: DateFieldColors(
+                  focusedBorderColor: Colors.deepPurple,
+                  labelColor: Colors.deepPurple,
+                  hintColor: Colors.grey,
                 ),
               ),
-              const SizedBox(height: 20),
-              TextButton(
-                onPressed: reset1,
-                child: const Text('Reset value 1'),
-              ),
-              const SizedBox(height: 20),
-              TextButton(
-                onPressed: force1,
-                child: const Text('Force value 1'),
-              ),
-              const SizedBox(height: 20),
-              TextButton(
-                onPressed: print1,
-                child: const Text('print current value 1'),
-              ),
-              const SizedBox(height: 20),
-              DateField(
-                controller: controller2,
-              ),
-              const SizedBox(height: 500),
-            ],
-          ),
+            ),
+
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                OutlinedButton(
+                  onPressed: () =>
+                      styledController.setValue(DateTime(2000, 1, 1)),
+                  child: const Text('Force 01/01/2000'),
+                ),
+                const SizedBox(width: 8),
+                FilledButton(
+                  onPressed: () =>
+                      _showCurrentValue(styledController, 'Styled Field'),
+                  child: const Text('Print Value'),
+                ),
+              ],
+            ),
+
+            // Extra spacing at the bottom to allow the overlay to open downwards
+            // if the user scrolls all the way down.
+            const SizedBox(height: 300),
+          ],
         ),
       ),
     );
