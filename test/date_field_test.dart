@@ -297,4 +297,139 @@ void main() {
       expect(() => controller.setValue(DateTime.now()), returnsNormally);
     });
   });
+
+  group('DateField - Atualizações Dinâmicas e Recuperação de Erro', () {
+    testWidgets('17. controller.setText insere o texto e agenda validação',
+        (tester) async {
+      final controller =
+          DateFieldController(firstDate: firstDate, lastDate: lastDate);
+      await tester.pumpWidget(buildTestableWidget(controller: controller));
+
+      // Chama setText diretamente
+      controller.setText('25/12/2025');
+      
+      // O texto deve atualizar na UI imediatamente
+      final textField = tester.widget<TextField>(find.byType(TextField));
+      expect(textField.controller!.text, '25/12/2025');
+
+      // O valor (DateTime) só atualiza após o debounce
+      expect(controller.value, isNull);
+      await tester.pump(const Duration(milliseconds: 150));
+      expect(controller.value, DateTime(2025, 12, 25));
+    });
+
+    testWidgets('18. Digitar data válida após uma inválida limpa o erro',
+        (tester) async {
+      final controller =
+          DateFieldController(firstDate: firstDate, lastDate: lastDate);
+      await tester.pumpWidget(buildTestableWidget(controller: controller));
+
+      // 1. Digita data inválida
+      await tester.enterText(find.byType(TextField), '99/99/9999');
+      await tester.pump(const Duration(milliseconds: 150));
+      expect(controller.errorText, isNotNull); // Erro presente
+
+      // 2. Apaga e digita data válida
+      await tester.enterText(find.byType(TextField), '01/01/2025');
+      await tester.pump(const Duration(milliseconds: 150));
+      
+      expect(controller.errorText, isNull); // Erro deve ter sido limpo
+      expect(controller.value, DateTime(2025));
+    });
+
+    testWidgets('19. Alterar setRange revalida o valor atual dinamicamente',
+        (tester) async {
+      // Inicia com uma data válida (2025) e range até 2050
+      final controller = DateFieldController(
+        firstDate: firstDate,
+        lastDate: lastDate,
+        initialValue: DateTime(2025),
+      );
+      await tester.pumpWidget(buildTestableWidget(controller: controller));
+      expect(controller.errorText, isNull);
+
+      // Altera o range fazendo com que o limite máximo seja 2024 (deixando 2025 inválido)
+      controller.setRange(first: firstDate, last: DateTime(2024, 12, 31));
+      
+      // Como setRange chama validateNow() internamente, o erro deve aparecer instantaneamente
+      expect(controller.errorText, isNotNull); 
+    });
+  });
+
+  group('DateField - Customização e Comportamentos Ocultos', () {
+    testWidgets('20. decorationBuilder customizado substitui o visual padrão',
+        (tester) async {
+      final controller =
+          DateFieldController(firstDate: firstDate, lastDate: lastDate);
+      
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: DateField(
+              controller: controller,
+              decorationBuilder: (context, errorText, textController) {
+                return InputDecoration(
+                  labelText: 'Meu Label Customizado',
+                  errorText: errorText == null ? null : 'Ops, erro!',
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      // Verifica se a label customizada foi aplicada
+      expect(find.text('Meu Label Customizado'), findsOneWidget);
+
+      // Força um erro para ver se a string customizada "Ops, erro!" aparece
+      await tester.enterText(find.byType(TextField), '99/99/9999');
+      await tester.pump(const Duration(milliseconds: 150));
+
+      expect(find.text('Ops, erro!'), findsOneWidget);
+    });
+
+    testWidgets('21. closeOverlay() manual do controller fecha o calendário',
+        (tester) async {
+      final controller =
+          DateFieldController(firstDate: firstDate, lastDate: lastDate);
+      await tester.pumpWidget(buildTestableWidget(controller: controller));
+
+      // Abre o overlay
+      controller.openOverlay(tester.element(find.byType(TextField)));
+      await tester.pumpAndSettle();
+      expect(find.byType(CalendarDatePicker), findsOneWidget);
+
+      // Chama o método direto do controller
+      controller.closeOverlay();
+      await tester.pumpAndSettle();
+
+      // Verifica se fechou
+      expect(find.byType(CalendarDatePicker), findsNothing);
+    });
+
+    testWidgets('22. Após submit, bounce de foco imediato não reabre o calendário',
+        (tester) async {
+      final controller =
+          DateFieldController(firstDate: firstDate, lastDate: lastDate);
+      await tester.pumpWidget(buildTestableWidget(controller: controller));
+
+      // Foca e digita
+      await tester.tap(find.byType(TextField));
+      await tester.pumpAndSettle();
+      await tester.enterText(find.byType(TextField), '10/10/2020');
+      
+      // Envia Enter. Isso aciona handleSubmit, tira o foco e ativa a trava (_justSubmitted = true)
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      
+      // IMEDIATAMENTE forçamos o foco de volta programaticamente ANTES do frame virar.
+      // Isso simula o comportamento anômalo do sistema que a trava _justSubmitted tenta evitar.
+      tester.widget<TextField>(find.byType(TextField)).focusNode?.requestFocus();
+      
+      // Avançamos o frame (sem usar pumpAndSettle para não estourar o tempo da trava)
+      await tester.pump();
+
+      // O overlay NÃO deve ter sido aberto!
+      expect(controller.overlayPortalController.isShowing, isFalse);
+    });
+  });
 }
