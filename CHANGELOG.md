@@ -1,3 +1,6 @@
+## [0.3.1] - 2026-04-28.
+-   Removed default icon.
+
 ## [0.3.0] - 2026-04-24.
 -   Production ready.
 

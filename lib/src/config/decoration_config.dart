@@ -175,7 +175,6 @@ InputDecoration dateFieldDefaultDecoration(
                   color: palette.clearIconColor, size: config.iconSize),
             ),
           )
-        : Icon(Icons.calendar_today,
-            color: palette.labelColor, size: config.iconSize),
+        : null,
   );
 }

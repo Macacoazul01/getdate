@@ -142,8 +142,7 @@ class _DateFieldShowcaseState extends State<DateFieldShowcase> {
             Row(
               children: [
                 OutlinedButton(
-                  onPressed: () =>
-                      styledController.setValue(DateTime(2000)),
+                  onPressed: () => styledController.setValue(DateTime(2000)),
                   child: const Text('Force 01/01/2000'),
                 ),
                 const SizedBox(width: 8),
