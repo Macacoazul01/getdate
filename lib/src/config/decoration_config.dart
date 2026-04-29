@@ -152,8 +152,10 @@ InputDecoration dateFieldDefaultDecoration(
     labelStyle: TextStyle(color: palette.labelColor, fontSize: config.fontSize),
     hintText: config.showHint ? config.hint : null,
 
-    hintStyle:
-        TextStyle(color: palette.hintColor, fontSize: config.hintFontSize),
+    hintStyle: TextStyle(
+      color: palette.hintColor,
+      fontSize: config.hintFontSize,
+    ),
 
     focusedBorder: buildBorder(palette.focusedBorderColor),
     errorBorder: buildBorder(palette.errorBorderColor),
@@ -171,8 +173,11 @@ InputDecoration dateFieldDefaultDecoration(
                 controller.clear();
                 config.onClear?.call();
               },
-              child: Icon(Icons.clear,
-                  color: palette.clearIconColor, size: config.iconSize),
+              child: Icon(
+                Icons.clear,
+                color: palette.clearIconColor,
+                size: config.iconSize,
+              ),
             ),
           )
         : null,

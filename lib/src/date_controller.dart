@@ -13,9 +13,9 @@ class DateFieldController {
     this.onErrorChanged,
     this.config = const DateOverlayConfig(),
     String Function(DateError)? messageOf,
-  })  : _first = firstDate,
-        _last = lastDate,
-        _messageOf = messageOf ?? defaultMessageOf {
+  }) : _first = firstDate,
+       _last = lastDate,
+       _messageOf = messageOf ?? defaultMessageOf {
     valueListenable.value = initialValue;
   }
 
@@ -194,7 +194,8 @@ class DateFieldController {
 
   void _setValueAndNotify(DateTime? dt, {required bool syncText}) {
     final current = valueListenable.value;
-    final changed = !(current == null && dt == null) &&
+    final changed =
+        !(current == null && dt == null) &&
         !(current != null && dt != null && compareYMD(current, dt) == 0);
     if (changed) {
       valueListenable.value = dt;
@@ -245,8 +246,9 @@ class DateFieldController {
     final double prefDyBelow = targetTopLeft.dy + targetSize.height + 4;
 
     final bool canOpenBelow = (screen.height - prefDyBelow) >= config.maxHeight;
-    final double originDy =
-        canOpenBelow ? prefDyBelow : (targetTopLeft.dy - config.maxHeight - 4);
+    final double originDy = canOpenBelow
+        ? prefDyBelow
+        : (targetTopLeft.dy - config.maxHeight - 4);
 
     final double dx = prefDx.clamp(0.0, screen.width - config.maxWidth);
     final double dy = originDy.clamp(0.0, screen.height - config.maxHeight);

@@ -6,11 +6,12 @@ import 'package:getdate_textfield/getdate_textfield.dart';
 ///
 /// Allows complete control over the visual appearance of the text field based
 /// on its current state and validation errors.
-typedef DateFieldDecorationBuilder = InputDecoration Function(
-  BuildContext context,
-  String? errorText,
-  TextEditingController controller,
-);
+typedef DateFieldDecorationBuilder =
+    InputDecoration Function(
+      BuildContext context,
+      String? errorText,
+      TextEditingController controller,
+    );
 
 /// A highly customizable date input field that coordinates with a
 /// [DateFieldController] to validate input and display a calendar overlay.
@@ -160,6 +161,9 @@ class _DateFieldState extends State<DateField> {
                     textInputAction: widget.textInputAction,
                     inputFormatters: _formatters,
                     decoration: decoration,
+                    style: TextStyle(
+                      fontSize: widget.decorationConfig.fontSize,
+                    ),
                     onChanged: widget.controller.onUserChangedText,
                     onSubmitted: (_) => widget.controller.handleSubmit(),
                   ),

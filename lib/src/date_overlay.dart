@@ -45,10 +45,7 @@ class DateOverlay extends StatelessWidget {
     return Stack(
       children: [
         // Invisible layer to detect taps outside the calendar overlay
-        GestureDetector(
-          behavior: HitTestBehavior.opaque,
-          onTap: onOutsideTap,
-        ),
+        GestureDetector(behavior: HitTestBehavior.opaque, onTap: onOutsideTap),
         Positioned(
           left: offset.dx,
           top: offset.dy,
